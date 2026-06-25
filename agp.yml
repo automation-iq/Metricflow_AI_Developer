@@ -1,0 +1,40 @@
+version: "1"
+
+# Agent P Configuration for Metricflow AI Developer
+# This configuration demonstrates Agent P capabilities for dependency management
+
+# Ignore specific paths from scanning
+ignore:
+  paths:
+    - "node_modules/**"
+    - "dist/**"
+    - "build/**"
+    - ".vscode/**"
+
+# AI Agent configuration
+agent:
+  enabled: true
+  provider: bedrock
+  model: us.anthropic.claude-sonnet-4-6
+  awsRegion: us-west-2
+  maxFixAttempts: 3
+
+# Validation configuration
+validation:
+  enabled: true
+  commands:
+    - "npm run build"
+    - "npm run test"
+
+# Pull Request configuration
+pr:
+  labels:
+    - dependencies
+    - automated
+    - agp
+
+# Policy Limits for demonstrating "Blocked by Policy" scenario
+limits:
+  maxOpenPRs: 5             # Maximum number of open PRs at any time
+  maxPRsPerRun: 5           # Limit to 5 PRs per run
+  closedPrCooldownDays: 7   # Cooldown window (days) for package-scope dedup

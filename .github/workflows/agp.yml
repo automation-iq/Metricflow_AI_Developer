@@ -1,0 +1,42 @@
+name: Agentic Patches
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Run mode: full or security'
+        required: false
+        default: 'full'
+      vulnerabilities:
+        description: 'JSON array of vulnerabilities to fix'
+        required: false
+
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write
+
+jobs:
+  agp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials (for Bedrock)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: us-west-2
+
+      - name: Run Agent P
+        uses: sonatype/agp-action@v1
+        with:
+          mode: ${{ inputs.mode }}
+          vulnerabilities: ${{ inputs.vulnerabilities }}
+          create-pr: 'true'
+          dry-run: 'false'
+        env:
+          AGP_API_TOKEN: ${{ secrets.AGP_API_TOKEN }}
+          AGP_API_URL: ${{ vars.AGP_API_URL }}
+          GITHUB_TOKEN: ${{ secrets.AGP_GITHUB_TOKEN || github.token }}
